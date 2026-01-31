@@ -158,10 +158,9 @@ function renderSvg(params: Params): string {
     return String(svg);
   }
 
-  // Export mode: crop to a single panel and output panelWidth × totalHeight
+  // Export mode: crop to the circle's bounding square
   const panelIndex = Math.max(1, Math.min(params.exportPanel, params.panels)) - 1;
   const panelCenter = centers[panelIndex] ?? centers[0];
-  const panelCenterX = panelCenter.x;
 
   const boundingSquare = new paper.Path.Rectangle(
     new paper.Point(panelCenter.x - CIRCLE_RADIUS, panelCenter.y - CIRCLE_RADIUS),
@@ -170,14 +169,15 @@ function renderSvg(params: Params): string {
   boundingSquare.strokeWidth = 2;
   boundingSquare.strokeColor = new paper.Color("blue");
 
-  const left = panelCenterX - RECT_WIDTH / 2;
-  const top = 0;
+  const left = panelCenter.x - CIRCLE_RADIUS;
+  const top = panelCenter.y - CIRCLE_RADIUS;
+  const squareSize = CIRCLE_RADIUS * 2;
 
   const svg = exportCroppedSvg({
     cropX: left,
     cropY: top,
-    cropWidth: RECT_WIDTH,
-    cropHeight: HEIGHT,
+    cropWidth: squareSize,
+    cropHeight: squareSize,
   });
 
   paper.project.clear();
