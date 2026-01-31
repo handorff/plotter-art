@@ -97,12 +97,14 @@ function renderSvg(params: Params): string {
   paper.view.viewSize = new paper.Size(WIDTH, HEIGHT);
 
   // ----- border (debug / optional) -----
-  const border = new paper.Path.Rectangle(
-    new paper.Point(0, 0),
-    new paper.Point(WIDTH, HEIGHT)
-  );
-  border.strokeWidth = 2;
-  border.strokeColor = new paper.Color("blue");
+  if (params.mode === "preview") {
+    const border = new paper.Path.Rectangle(
+      new paper.Point(0, 0),
+      new paper.Point(WIDTH, HEIGHT)
+    );
+    border.strokeWidth = 2;
+    border.strokeColor = new paper.Color("blue");
+  }
 
 
   const f = (x: number) => {
@@ -125,15 +127,17 @@ function renderSvg(params: Params): string {
     return c;
   });
 
-  const rects = centers.map(({ x }) => {
-    const r = new paper.Path.Rectangle(
-      new paper.Point(x - RECT_WIDTH / 2, 0),
-      new paper.Point(x + RECT_WIDTH / 2, HEIGHT)
-    );
-    r.strokeWidth = 2;
-    r.strokeColor = new paper.Color("red");
-    return r;
-  });
+  if (params.mode === "preview") {
+    centers.map(({ x }) => {
+      const r = new paper.Path.Rectangle(
+        new paper.Point(x - RECT_WIDTH / 2, 0),
+        new paper.Point(x + RECT_WIDTH / 2, HEIGHT)
+      );
+      r.strokeWidth = 2;
+      r.strokeColor = new paper.Color("red");
+      return r;
+    });
+  }
 
   // ----- intersections (this creates new items in the project) -----
   for (const c of circles) {
@@ -156,7 +160,15 @@ function renderSvg(params: Params): string {
 
   // Export mode: crop to a single panel and output panelWidth × totalHeight
   const panelIndex = Math.max(1, Math.min(params.exportPanel, params.panels)) - 1;
-  const panelCenterX = centers[panelIndex]?.x ?? centers[0].x;
+  const panelCenter = centers[panelIndex] ?? centers[0];
+  const panelCenterX = panelCenter.x;
+
+  const boundingSquare = new paper.Path.Rectangle(
+    new paper.Point(panelCenter.x - CIRCLE_RADIUS, panelCenter.y - CIRCLE_RADIUS),
+    new paper.Size(CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 2)
+  );
+  boundingSquare.strokeWidth = 2;
+  boundingSquare.strokeColor = new paper.Color("blue");
 
   const left = panelCenterX - RECT_WIDTH / 2;
   const top = 0;
