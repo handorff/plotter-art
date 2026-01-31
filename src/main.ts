@@ -321,12 +321,20 @@ app.innerHTML = `
         </label>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr 200px; gap: 10px; align-items:center;">
-        <label>Seed</label>
-        <div style="display:flex; gap:6px;">
-          <input id="seed" type="text" value="${DEFAULTS.seed}" style="flex:1;" />
-          <button id="randomSeed" type="button">Randomize</button>
-        </div>
+      <div style="display:grid; grid-template-columns: 1fr 120px; gap: 10px; align-items:center;">
+        <label style="display:flex; align-items:center; gap:6px;">
+          Seed
+          <button
+            id="randomSeed"
+            type="button"
+            aria-label="Randomize seed"
+            title="Randomize seed"
+            style="width:28px; height:28px; padding:0; line-height:1;"
+          >
+            🎲
+          </button>
+        </label>
+        <input id="seed" type="text" value="${DEFAULTS.seed}" />
 
         <label>Points</label>
         <input id="points" type="number" min="1" step="1" value="${DEFAULTS.points}" />
