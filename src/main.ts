@@ -321,9 +321,12 @@ app.innerHTML = `
         </label>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr 120px; gap: 10px; align-items:center;">
+      <div style="display:grid; grid-template-columns: 1fr 200px; gap: 10px; align-items:center;">
         <label>Seed</label>
-        <input id="seed" type="text" value="${DEFAULTS.seed}" />
+        <div style="display:flex; gap:6px;">
+          <input id="seed" type="text" value="${DEFAULTS.seed}" style="flex:1;" />
+          <button id="randomSeed" type="button">Randomize</button>
+        </div>
 
         <label>Points</label>
         <input id="points" type="number" min="1" step="1" value="${DEFAULTS.points}" />
@@ -386,6 +389,7 @@ const els = {
   status: document.querySelector<HTMLParagraphElement>("#status")!,
   render: document.querySelector<HTMLButtonElement>("#render")!,
   download: document.querySelector<HTMLButtonElement>("#download")!,
+  randomSeed: document.querySelector<HTMLButtonElement>("#randomSeed")!,
   modeRadios: Array.from(
     document.querySelectorAll<HTMLInputElement>('input[name="mode"]')
   ),
@@ -437,6 +441,18 @@ async function doRender() {
   els.status.textContent = "Done.";
 }
 
+function generateSeed(length = 8) {
+  const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+  if (typeof crypto !== "undefined" && "getRandomValues" in crypto) {
+    const values = new Uint32Array(length);
+    crypto.getRandomValues(values);
+    return Array.from(values, (value) => alphabet[value % alphabet.length]).join("");
+  }
+  return Array.from({ length }, () =>
+    alphabet[Math.floor(Math.random() * alphabet.length)]
+  ).join("");
+}
+
 function downloadSvg() {
   if (!lastSvg) return;
 
@@ -458,6 +474,12 @@ function downloadSvg() {
 
 els.render.addEventListener("click", () => void doRender());
 els.download.addEventListener("click", () => downloadSvg());
+els.randomSeed.addEventListener("click", () => {
+  els.seed.value = generateSeed();
+  els.seed.focus();
+  els.seed.select();
+  void doRender();
+});
 
 // re-render on input change (optional but nice)
 for (const input of [
