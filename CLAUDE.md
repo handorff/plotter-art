@@ -12,7 +12,7 @@ npm run preview  # Preview production build locally
 
 ## Architecture
 
-Moonrise SVG is a procedural SVG artwork generator using Paper.js for vector graphics and boolean operations.
+This repository is an umbrella for multiple procedural SVG generators built with Paper.js and a shared schema-driven parameter UI library.
 
 ### Tech Stack
 - TypeScript + Vite
@@ -21,16 +21,17 @@ Moonrise SVG is a procedural SVG artwork generator using Paper.js for vector gra
 
 ### Code Structure
 
-The codebase is organized into focused modules under `src/`:
+The codebase is organized into shared modules and per-generator modules:
 
-| File | Purpose |
+| Path | Purpose |
 |------|---------|
-| `main.ts` | Entry point; calls `initUI()` |
-| `schema.ts` | Schema-based `Params` type definition using `param-lib` |
-| `random.ts` | Seeded PRNG (`xmur3` + `mulberry32`) and `getRandomPoints()` |
-| `geometry.ts` | `makeTranslatedTruncatedCurve()` and `circleCenters()` |
-| `render.ts` | `renderSvg()` for preview mode, `renderExportSvg()` for single-panel export |
-| `ui.ts` | Initializes UI via `createParamUI()` from param-lib |
+| `src/core/` | Generator types + registry. |
+| `src/generators/` | Each generator has its own `schema.ts`, `render.ts`, `index.ts`. |
+| `src/pages/` | Page entry points for gallery + each generator page. |
+| `src/param-lib/` | Schema-driven parameter UI library used by all generators. |
+| `src/random.ts` | Seeded PRNG (`xmur3` + `mulberry32`) and helpers. |
+| `src/geometry.ts` | Shared geometry helpers used by generators. |
+| `src/ui.ts` | `mountGeneratorUI()` helper for generator pages. |
 
 #### param-lib (`src/param-lib/`)
 
@@ -44,16 +45,29 @@ A schema-driven parameter library that generates types, UI, and coercion from a 
 | `ui.ts` | `createParamUI(schema, config)` - generates complete UI from schema |
 | `index.ts` | Public API re-exports |
 
-### How the Algorithm Works
+### Pages and URLs
 
-1. A mathematical function `f(x)` defines an arc curve
-2. Random points are generated using a seeded PRNG
-3. Curved paths are created that follow the arc function
-4. Circular "panels" are positioned along the arc
-5. Paper.js computes boolean intersections between paths and circles
-6. Original shapes are removed, leaving only the intersected segments
+- `/` is the gallery index (links to each generator).
+- `/moonrise/` and `/grid/` are generator pages (add new pages per generator).
 
-### Two Rendering Modes
+### Generator Modules
 
-- **Preview**: All panels rendered with blue border and red panel rectangles for debugging
-- **Export**: Single selected panel rendered as a square SVG for download
+Each generator exports:
+- `schema` (param-lib schema definition)
+- `render(params)` (returns SVG string)
+- `meta` in `index.ts` with name/description for the gallery
+
+### Moonrise Generator Notes
+
+Moonrise (in `src/generators/moonrise/`) renders arc-aligned circles and uses boolean intersections for its panelized output:
+1. A mathematical function `f(x)` defines an arc curve.
+2. Random points are generated using a seeded PRNG.
+3. Curved paths are created that follow the arc function.
+4. Circular panels are positioned along the arc.
+5. Paper.js computes intersections between paths and circles.
+6. Original shapes are removed, leaving intersected segments.
+
+### Rendering Modes (Moonrise)
+
+- **Preview**: All panels rendered with blue border and red panel rectangles for debugging.
+- **Export**: Single selected panel rendered as a square SVG for download.
