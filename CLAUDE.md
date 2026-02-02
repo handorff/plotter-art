@@ -27,11 +27,11 @@ The codebase is organized into shared modules and per-generator modules:
 |------|---------|
 | `src/core/` | Generator types + registry. |
 | `src/generators/` | Each generator has its own `schema.ts`, `render.ts`, `index.ts`. |
-| `src/pages/` | Page entry points for gallery + each generator page. |
 | `src/param-lib/` | Schema-driven parameter UI library used by all generators. |
 | `src/random.ts` | Seeded PRNG (`xmur3` + `mulberry32`) and helpers. |
 | `src/geometry.ts` | Shared geometry helpers used by generators. |
 | `src/ui.ts` | `mountGeneratorUI()` helper for generator pages. |
+| `src/main.ts` | Single entry: gallery and generator view routing. |
 
 #### param-lib (`src/param-lib/`)
 
@@ -47,8 +47,8 @@ A schema-driven parameter library that generates types, UI, and coercion from a 
 
 ### Pages and URLs
 
-- `/` is the gallery index (links to each generator).
-- `/moonrise/` and `/grid/` are generator pages (add new pages per generator).
+- `/` is the gallery index.
+- Generator pages are selected via query param: `/?g=moonrise` (links are generated from the registry).
 
 ### Generator Modules
 
