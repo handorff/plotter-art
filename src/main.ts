@@ -4,6 +4,7 @@ import { mountGeneratorUI } from "./ui";
 const app = document.querySelector<HTMLDivElement>("#app");
 
 if (app) {
+  const baseUrl = import.meta.env.BASE_URL || "/";
   const params = new URLSearchParams(window.location.search);
   const selectedId = params.get("g");
   const selected = selectedId ? getGeneratorById(selectedId) : undefined;
@@ -12,7 +13,7 @@ if (app) {
     app.innerHTML = `
       <main style="max-width: 1100px; margin: 0 auto; padding: 40px 24px;">
         <header style="margin-bottom: 24px;">
-          <a href="/" style="text-decoration:none; color: inherit;">← Back to gallery</a>
+          <a href="${baseUrl}" style="text-decoration:none; color: inherit;">← Back to gallery</a>
           <h1 style="margin: 12px 0 6px;">${selected.name}</h1>
           <p style="margin: 0; color: #555;">${selected.description ?? ""}</p>
         </header>
@@ -34,7 +35,7 @@ if (app) {
           <article class="card">
             <h2>${generator.name}</h2>
             ${description}
-            <a href="/?g=${generator.id}" class="card-link">Open ${generator.name}</a>
+            <a href="${baseUrl}?g=${generator.id}" class="card-link">Open ${generator.name}</a>
           </article>
         `;
       })
